@@ -364,6 +364,23 @@ main-content{flex:1;} footer{padding:44px 60px;border-top:1px solid var(--border
   .meta-divider { display: none; }
   .hero-meta { gap: 18px; }
 }
+
+/* HAMBURGER */
+.hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px;z-index:600;}
+.hamburger span{display:block;width:22px;height:2px;background:var(--purple);transition:transform 0.3s,opacity 0.3s;}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.mobile-menu{display:none;position:fixed;top:56px;left:0;right:0;background:rgba(26,39,68,0.99);backdrop-filter:blur(12px);border-bottom:1px solid rgba(77,159,255,0.3);padding:18px 20px 24px;z-index:499;flex-direction:column;gap:4px;}
+.mobile-menu.open{display:flex;}
+.mobile-menu a{font-family:'Orbitron',monospace;font-weight:700;font-size:0.82rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:10px 0;border-bottom:1px solid rgba(77,159,255,0.1);transition:color 0.2s;}
+.mobile-menu a:last-child{border-bottom:none;}
+.mobile-menu a:hover{color:var(--purple);}
+@media (max-width: 768px) {
+  .hamburger{display:flex;}
+  .nav-status{display:none;}
+}
+
 </style>
 </head>
 <body>
@@ -383,8 +400,22 @@ main-content{flex:1;} footer{padding:44px 60px;border-top:1px solid var(--border
     <li><a href="sponsors.html">Sponsors</a></li>
     <li><a href="rulebook.html">Rulebook</a></li>
   </ul>
-  <div class="nav-status"><div class="status-dot"></div>REGISTRATIONS OPEN</div>
+  <div class="nav-status" id="navStatus"><div class="status-dot"></div>REGISTRATIONS OPEN</div>
+  <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="format.html" onclick="closeMobileMenu()">Format</a>
+  <a href="bracket.html" onclick="closeMobileMenu()">Bracket</a>
+  <a href="teams.html" onclick="closeMobileMenu()">Teams</a>
+  <a href="schedule.html" onclick="closeMobileMenu()">Schedule</a>
+  <a href="prizes.html" onclick="closeMobileMenu()">Prizes</a>
+  <a href="about.html" onclick="closeMobileMenu()">About</a>
+  <a href="sponsors.html" onclick="closeMobileMenu()">Sponsors</a>
+  <a href="rulebook.html" onclick="closeMobileMenu()">Rulebook</a>
+</div>
 <!-- BRACKET -->
 <section class="bracket-section" id="bracket">
   <div class="bracket-header reveal">
@@ -506,7 +537,7 @@ main-content{flex:1;} footer{padding:44px 60px;border-top:1px solid var(--border
       <ul class="footer-links">
         <li><a href="https://forms.office.com/Pages/ResponsePage.aspx?id=xQ4KNpTw8UWjGcbcNWAnBBxdXCg_s6ZGgn0z2tmqbvVUOVBDUFAxMjhKOVBNUkkzRjBBNFFOUjFYTi4u" target="_blank">Sign Up Your Team</a></li>
         <li><a href="sponsors.html">Become a Sponsor</a></li>
-        <li><a href="/cdn-cgi/l/email-protection#305c4548555d525f45425753435d51434455424370575d51595c1e535f5d" style="color:inherit;text-decoration:none;">Contact Us</a></li>
+        <li><a href="mailto:Luxembourgcsmasters@gmail.com" style="color:inherit;text-decoration:none;">Contact Us</a></li>
       </ul>
     </div>
   </div>
@@ -515,8 +546,7 @@ main-content{flex:1;} footer{padding:44px 60px;border-top:1px solid var(--border
     <div class="footer-made">Made with <span>♥</span> by students of Athénée de Luxembourg</div>
   </div>
 </footer>
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-
+<script>
 const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
 let mx=0,my=0,rx=0,ry=0;
 document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px';});
@@ -524,13 +554,12 @@ document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style
 const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});},{threshold:0.07});
 document.querySelectorAll('.reveal').forEach(r=>obs.observe(r));
 
-
 function drawBracketLines(){
   function drawConn(fromId,connId,toId,pairs,toIdxs){
     const conn=document.getElementById(connId);if(!conn)return;
     const cr=conn.getBoundingClientRect(),svg=conn.querySelector('svg');
     svg.innerHTML='';const W=cr.width,H=cr.height;
-    svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+    svg.setAttribute('viewBox','0 0 '+W+' '+H);
     const from=document.getElementById(fromId),to=document.getElementById(toId);
     if(!from||!to)return;
     const fm=from.querySelectorAll('.match'),tm=to.querySelectorAll('.match');
@@ -542,7 +571,7 @@ function drawBracketLines(){
       const midY=pts.reduce((a,b)=>a+b,0)/pts.length;
       for(const y of pts){
         const p=document.createElementNS('http://www.w3.org/2000/svg','path');
-        p.setAttribute('d',`M 0 ${y} H ${W*0.5}`);p.setAttribute('stroke','rgba(210,160,0,0.25)');p.setAttribute('stroke-width','1.5');p.setAttribute('fill','none');svg.appendChild(p);
+        p.setAttribute('d','M 0 '+y+' H '+(W*0.5));p.setAttribute('stroke','rgba(210,160,0,0.25)');p.setAttribute('stroke-width','1.5');p.setAttribute('fill','none');svg.appendChild(p);
         const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
         dot.setAttribute('cx','0');dot.setAttribute('cy',y);dot.setAttribute('r','3');dot.setAttribute('fill','rgba(210,160,0,0.35)');svg.appendChild(dot);
       }
@@ -552,6 +581,27 @@ function drawBracketLines(){
         vl.setAttribute('stroke','rgba(210,160,0,0.25)');vl.setAttribute('stroke-width','1.5');svg.appendChild(vl);
       }
       const ho=document.createElementNS('http://www.w3.org/2000/svg','path');
-      ho.setAttribute('d',`M ${W*0.5} ${midY} H ${W}`);ho.setAttribute('stroke','rgba(210,160,0,0.35)');ho.setAttribute('stroke-width','1.5');ho.setAttribute('fill','none');svg.appendChild(ho);
+      const tr=tm[tidx].getBoundingClientRect();
+      const ty=tr.top+tr.height/2-cr.top;
+      ho.setAttribute('d','M '+(W*0.5)+' '+midY+' H '+W);ho.setAttribute('stroke','rgba(210,160,0,0.35)');ho.setAttribute('stroke-width','1.5');ho.setAttribute('fill','none');svg.appendChild(ho);
       const d2=document.createElementNS('http://www.w3.org/2000/svg','circle');
-      d2.setAttribute('cx',W);d2.setAttribute('cy',m
+      d2.setAttribute('cx',W);d2.setAttribute('cy',midY);d2.setAttribute('r','3');d2.setAttribute('fill','rgba(210,160,0,0.55)');svg.appendChild(d2);
+    }
+  }
+  drawConn('r1','conn1','r2',[[0,1],[2,3]],[0,1]);
+  drawConn('r2','conn2','r3',[[0],[1]],[0,0]);
+  drawConn('r3','conn3','r4',[[0]],[0]);
+}
+window.addEventListener('load',drawBracketLines);
+window.addEventListener('resize',drawBracketLines);
+function toggleMobileMenu(){
+  document.getElementById('hamburger').classList.toggle('open');
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+function closeMobileMenu(){
+  document.getElementById('hamburger').classList.remove('open');
+  document.getElementById('mobileMenu').classList.remove('open');
+}
+</script>
+</body>
+</html>

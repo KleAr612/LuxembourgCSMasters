@@ -364,6 +364,23 @@ main-content{flex:1;} footer{padding:44px 60px;border-top:1px solid var(--border
   .meta-divider { display: none; }
   .hero-meta { gap: 18px; }
 }
+
+/* HAMBURGER */
+.hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px;z-index:600;}
+.hamburger span{display:block;width:22px;height:2px;background:var(--purple);transition:transform 0.3s,opacity 0.3s;}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.mobile-menu{display:none;position:fixed;top:56px;left:0;right:0;background:rgba(26,39,68,0.99);backdrop-filter:blur(12px);border-bottom:1px solid rgba(77,159,255,0.3);padding:18px 20px 24px;z-index:499;flex-direction:column;gap:4px;}
+.mobile-menu.open{display:flex;}
+.mobile-menu a{font-family:'Orbitron',monospace;font-weight:700;font-size:0.82rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:10px 0;border-bottom:1px solid rgba(77,159,255,0.1);transition:color 0.2s;}
+.mobile-menu a:last-child{border-bottom:none;}
+.mobile-menu a:hover{color:var(--purple);}
+@media (max-width: 768px) {
+  .hamburger{display:flex;}
+  .nav-status{display:none;}
+}
+
 </style>
 </head>
 <body>
@@ -383,8 +400,22 @@ main-content{flex:1;} footer{padding:44px 60px;border-top:1px solid var(--border
     <li><a href="sponsors.html">Sponsors</a></li>
     <li><a href="rulebook.html">Rulebook</a></li>
   </ul>
-  <div class="nav-status"><div class="status-dot"></div>REGISTRATIONS OPEN</div>
+  <div class="nav-status" id="navStatus"><div class="status-dot"></div>REGISTRATIONS OPEN</div>
+  <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="format.html" onclick="closeMobileMenu()">Format</a>
+  <a href="bracket.html" onclick="closeMobileMenu()">Bracket</a>
+  <a href="teams.html" onclick="closeMobileMenu()">Teams</a>
+  <a href="schedule.html" onclick="closeMobileMenu()">Schedule</a>
+  <a href="prizes.html" onclick="closeMobileMenu()">Prizes</a>
+  <a href="about.html" onclick="closeMobileMenu()">About</a>
+  <a href="sponsors.html" onclick="closeMobileMenu()">Sponsors</a>
+  <a href="rulebook.html" onclick="closeMobileMenu()">Rulebook</a>
+</div>
 <!-- SPONSORS -->
 <section class="sponsors-section" id="sponsors">
   <div class="reveal">
@@ -418,7 +449,7 @@ main-content{flex:1;} footer{padding:44px 60px;border-top:1px solid var(--border
       <span class="sponsor-or">Get in touch via</span>
       <button class="btn-fire" onclick="openSponsorModal()">Contact Form</button>
       <span class="sponsor-or">or directly at</span>
-      <a href="/cdn-cgi/l/email-protection#e589909d8088878a909782869688849691809796a58288848c89cb868a88" class="sponsor-cta-email"><span class="__cf_email__" data-cfemail="7c10090419111e13090e1b1f0f111d0f08190e0f3c1b111d1510521f1311">[email&#160;protected]</span></a>
+      <a href="mailto:Luxembourgcsmasters@gmail.com" class="sponsor-cta-email">Luxembourgcsmasters@gmail.com</a>
     </div>
   </div>
 </section>
@@ -469,49 +500,7 @@ main-content{flex:1;} footer{padding:44px 60px;border-top:1px solid var(--border
 
 
 
-<!-- SPONSOR CONTACT MODAL -->
-<div id="sponsorModal" class="modal-overlay" onclick="closeSponsorModal(event)">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeSponsorModal()">&times;</button>
-    <div class="modal-header">
-      <div class="modal-label">SPONSORSHIP</div>
-      <h2 class="modal-title">Get in <span>Touch</span></h2>
-      <p class="modal-desc">Fill in the form below and we'll get back to you as soon as possible.</p>
-    </div>
-    <div id="modalFormView">
-      <div class="form-grid">
-        <div class="form-group form-full">
-          <label class="form-label">Company / Name <span class="req">*</span></label>
-          <input type="text" id="f-company" class="form-input" placeholder="e.g. Acme Corp or John Doe">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Email Address <span class="req">*</span></label>
-          <input type="email" id="f-email" class="form-input" placeholder="you@example.com">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Phone Number <span class="opt">(optional)</span></label>
-          <input type="tel" id="f-phone" class="form-input" placeholder="+352 000 000">
-        </div>
-        <div class="form-group form-full">
-          <label class="form-label">Inquiry <span class="req">*</span></label>
-          <input type="text" id="f-inquiry" class="form-input" placeholder="e.g. Gold sponsorship package, jersey branding...">
-        </div>
-        <div class="form-group form-full">
-          <label class="form-label">Message <span class="req">*</span></label>
-          <textarea id="f-message" class="form-input form-textarea" placeholder="Tell us more about your interest, budget, or any questions you have..."></textarea>
-        </div>
-      </div>
-      <div id="formError" class="form-error" style="display:none;"></div>
-      <button class="btn-fire form-submit" onclick="submitSponsorForm()">Send Message</button>
-    </div>
-    <div id="modalSuccessView" style="display:none;" class="modal-success">
-      <div class="success-icon">✓</div>
-      <h3 class="success-title">Message Sent!</h3>
-      <p class="success-desc">Thanks for reaching out. We'll be in touch with you shortly.</p>
-      <button class="btn-outline" onclick="closeSponsorModal()" style="margin-top:24px;">Close</button>
-    </div>
-  </div>
-</div>
+
 <footer>
   <div class="footer-top">
     <div>
@@ -542,7 +531,7 @@ main-content{flex:1;} footer{padding:44px 60px;border-top:1px solid var(--border
       <ul class="footer-links">
         <li><a href="https://forms.office.com/Pages/ResponsePage.aspx?id=xQ4KNpTw8UWjGcbcNWAnBBxdXCg_s6ZGgn0z2tmqbvVUOVBDUFAxMjhKOVBNUkkzRjBBNFFOUjFYTi4u" target="_blank">Sign Up Your Team</a></li>
         <li><a href="sponsors.html">Become a Sponsor</a></li>
-        <li><a href="/cdn-cgi/l/email-protection#c1adb4b9a4aca3aeb4b3a6a2b2aca0b2b5a4b3b281a6aca0a8adefa2aeac" style="color:inherit;text-decoration:none;">Contact Us</a></li>
+        <li><a href="mailto:Luxembourgcsmasters@gmail.com" style="color:inherit;text-decoration:none;">Contact Us</a></li>
       </ul>
     </div>
   </div>
@@ -551,15 +540,13 @@ main-content{flex:1;} footer{padding:44px 60px;border-top:1px solid var(--border
     <div class="footer-made">Made with <span>♥</span> by students of Athénée de Luxembourg</div>
   </div>
 </footer>
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-
+<script>
 const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
 let mx=0,my=0,rx=0,ry=0;
 document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px';});
 (function anim(){rx+=(mx-rx)*0.1;ry+=(my-ry)*0.1;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(anim);})();
 const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});},{threshold:0.07});
 document.querySelectorAll('.reveal').forEach(r=>obs.observe(r));
-
 
 function openSponsorModal(){
   document.getElementById('sponsorModal').classList.add('active');
@@ -581,4 +568,21 @@ function submitSponsorForm(){
   if(!company){errEl.textContent='Please enter your company or name.';errEl.style.display='block';return;}
   if(!email||!/^[^@]+@[^@]+\.[^@]+$/.test(email)){errEl.textContent='Please enter a valid email address.';errEl.style.display='block';return;}
   if(!inquiry){errEl.textContent='Please describe your inquiry.';errEl.style.display='block';return;}
-  if(!message){errEl.textContent='Please enter a message.';errEl.style.display='block'
+  if(!message){errEl.textContent='Please enter a message.';errEl.style.display='block';return;}
+  const subject=encodeURIComponent('Sponsorship Inquiry: '+inquiry);
+  const body=encodeURIComponent('Company/Name: '+company+'\nEmail: '+email+'\nPhone: '+document.getElementById('f-phone').value.trim()+'\n\nInquiry: '+inquiry+'\n\nMessage:\n'+message);
+  window.location.href='mailto:Luxembourgcsmasters@gmail.com?subject='+subject+'&body='+body;
+  document.getElementById('modalFormView').style.display='none';
+  document.getElementById('modalSuccessView').style.display='block';
+}
+function toggleMobileMenu(){
+  document.getElementById('hamburger').classList.toggle('open');
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+function closeMobileMenu(){
+  document.getElementById('hamburger').classList.remove('open');
+  document.getElementById('mobileMenu').classList.remove('open');
+}
+</script>
+</body>
+</html>
